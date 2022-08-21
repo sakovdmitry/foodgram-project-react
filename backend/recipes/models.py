@@ -1,10 +1,11 @@
 from django.db import models
+
 from users.models import CustomUser
 
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=250,
+        max_length=20,
         blank=False,
         verbose_name='Название ингредиента'
     )
@@ -17,6 +18,7 @@ class Ingredient(models.Model):
     class Meta:
         ordering = ['-id']
         verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
         return self.name
@@ -32,7 +34,7 @@ class Tag(models.Model):
         (BLUE, 'Синий')
     ]
     name = models.CharField(
-        max_length=250,
+        max_length=20,
         blank=False,
         unique=True,
         verbose_name='Название тега'
@@ -53,6 +55,7 @@ class Tag(models.Model):
     class Meta:
         ordering = ['-id']
         verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
     def __str__(self):
         return self.name
@@ -90,6 +93,7 @@ class Recipe(models.Model):
     class Meta:
         ordering = ['-id']
         verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.name
@@ -129,11 +133,12 @@ class FavoriteRecipe(models.Model):
 
     class Meta:
         ordering = ['-id']
-        verbose_name = 'Избранные рецепты'
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
-                name='Избранные рецепты')
+                name='Избранный рецепт')
         ]
 
 
@@ -154,6 +159,7 @@ class Cart(models.Model):
     class Meta:
         ordering = ['-id']
         verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзины'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],

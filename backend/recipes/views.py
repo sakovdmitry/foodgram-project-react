@@ -1,17 +1,26 @@
-from django.db.models import Sum
 from django.http.response import HttpResponse
-from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users.serializers import FollowRecipeSerializer
 
-from .models import (Cart, FavoriteRecipe, Ingredient, Recipe,
-                     RecipeIngredient, Tag)
+from .models import (
+    Cart,
+    FavoriteRecipe,
+    Ingredient,
+    Recipe,
+    Tag
+    )
 from .pagination import RecipePagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from .serializers import IngredientSerializer, RecipeSerializer, TagSerializer
+from .serializers import (
+    IngredientSerializer,
+    RecipeSerializer,
+    TagSerializer,
+    FavoriteRecipeSerializer,
+    CartSerializer
+    )
+from .utils import generate_shop_list
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -23,18 +32,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def create_obj(self, model, user, pk):
-        if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response(
-                {'errors': 'Рецепт уже добавлен в список'},
-                status=status.HTTP_400_BAD_REQUEST
-                )
-        recipe = get_object_or_404(Recipe, id=pk)
-        model.objects.create(user=user, recipe=recipe)
-        serializer = FollowRecipeSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    @staticmethod
+    def __create_obj(request, pk, serializers):
+        data = {'user': request.user.id, 'recipe': pk}
+        serializer = serializers(data=data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def delete_obj(self, model, user, pk):
+    @staticmethod
+    def __delete_obj(model, user, pk):
         obj = model.objects.filter(user=user, recipe__id=pk)
         if obj.exists():
             obj.delete()
@@ -44,17 +52,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST
             )
 
+    def __favoritecart(self, request, pk, serializer, model):
+        if request.method == 'POST':
+            return self.__create_obj(
+                request,
+                pk,
+                serializer
+                )
+        return self.__delete_obj(
+            model,
+            request.user,
+            pk,
+            )
+
     @action(
         detail=True,
         methods=['post', 'delete'],
         permission_classes=[IsAuthenticated]
         )
     def favorite(self, request, pk=None):
-        if request.method == 'POST':
-            return self.create_obj(FavoriteRecipe, request.user, pk)
-        elif request.method == 'DELETE':
-            return self.delete_obj(FavoriteRecipe, request.user, pk)
-        return None
+        return self.__favoritecart(
+            request,
+            pk,
+            FavoriteRecipeSerializer,
+            FavoriteRecipe
+            )
 
     @action(
         detail=True,
@@ -62,31 +84,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
         )
     def shopping_cart(self, request, pk=None):
-        if request.method == 'POST':
-            return self.create_obj(Cart, request.user, pk)
-        elif request.method == 'DELETE':
-            return self.delete_obj(Cart, request.user, pk)
-        return None
+        return self.__favoritecart(request, pk, CartSerializer, Cart)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        ingredients = RecipeIngredient.objects.filter(
-            recipe__carts__user=request.user).values(
-                'ingredient__name',
-                'ingredient__measurement_unit',
-        ).annotate(Sum('amount'))
-
-        if not ingredients:
-            return Response({'error': 'Ваша корзина пуста'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        shop_list = 'Список покупок: \n'
-        for ingredient in ingredients:
-            shop_list += (
-                f"{ingredient['ingredient__name']} - "
-                f"{ingredient['amount__sum']} "
-                f"{ingredient['ingredient__measurement_unit']} \n"
-            )
+        shop_list = generate_shop_list(request)
         return HttpResponse(shop_list, content_type='text/plain')
 
 

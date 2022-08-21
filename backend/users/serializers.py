@@ -1,6 +1,7 @@
-from djoser.serializers import UserCreateSerializer, UserSerializer
-from recipes.models import Recipe
 from rest_framework import serializers
+from djoser.serializers import UserCreateSerializer, UserSerializer
+
+from recipes.models import Recipe
 from users.models import CustomUser, Follow
 
 
@@ -51,7 +52,7 @@ class FollowRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class FollowSerializer(serializers.Serializer):
+class FollowSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(
         source='author.id'
         )
@@ -75,23 +76,25 @@ class FollowSerializer(serializers.Serializer):
         model = Follow
         fields = (
             'id',
+            'user',
             'email',
             'username',
             'first_name',
             'last_name',
-            'is_subscribed',
+            'author',
             'recipes',
+            'is_subscribed',
             'recipes_count'
             )
 
     def validate(self, data):
-        user = data['follower']
-        author = data['following']
+        user = data['user']
+        author = data['author']
         if user == author:
             raise serializers.ValidationError(
                 'Невозможно подписаться на самого себя'
                 )
-        if (Follow.objects.filter(author=author, user=user).exists()):
+        elif Follow.objects.filter(user=user, author=author).exists():
             raise serializers.ValidationError(
                 'Вы уже подписаны на данного автора'
                 )
