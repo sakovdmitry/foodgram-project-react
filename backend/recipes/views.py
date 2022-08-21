@@ -10,7 +10,7 @@ from .models import (
     Ingredient,
     Recipe,
     Tag
-    )
+)
 from .pagination import RecipePagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (
@@ -19,7 +19,7 @@ from .serializers import (
     TagSerializer,
     FavoriteRecipeSerializer,
     CartSerializer
-    )
+)
 from .utils import generate_shop_list
 
 
@@ -52,7 +52,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST
             )
 
-    def __favoritecart(self, request, pk, serializer, model):
+    def __method_handler(self, request, pk, serializer, model):
         if request.method == 'POST':
             return self.__create_obj(
                 request,
@@ -71,7 +71,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
         )
     def favorite(self, request, pk=None):
-        return self.__favoritecart(
+        return self.__method_handler(
             request,
             pk,
             FavoriteRecipeSerializer,
@@ -84,11 +84,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
         )
     def shopping_cart(self, request, pk=None):
-        return self.__favoritecart(request, pk, CartSerializer, Cart)
+        return self.__method_handler(request, pk, CartSerializer, Cart)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        shop_list = generate_shop_list(request)
+        shop_list = generate_shop_list(request.user)
         return HttpResponse(shop_list, content_type='text/plain')
 
 

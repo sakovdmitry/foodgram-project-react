@@ -1,12 +1,13 @@
-from .models import RecipeIngredient
 from django.db.models import Sum
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
+
+from .models import RecipeIngredient
 
 
-def generate_shop_list(request):
+def generate_shop_list(user):
     ingredients = RecipeIngredient.objects.filter(
-        recipe__carts__user=request.user).values(
+        recipe__carts__user=user).values(
             'ingredient__name',
             'ingredient__measurement_unit',
     ).annotate(Sum('amount'))

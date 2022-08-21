@@ -7,7 +7,7 @@ from .models import (
     RecipeIngredient,
     Cart,
     Tag
-    )
+)
 
 
 @admin.register(Recipe)
@@ -18,8 +18,10 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def count_favorites(self, obj):
         return obj.favorites.count()
-    count_favorites.short_description = "Количество добавлений" \
-        " рецепта в избранное"
+
+    count_favorites.short_description = (
+        'Количество добавлений рецепта в избранное'
+        )
 
 
 @admin.register(Ingredient)

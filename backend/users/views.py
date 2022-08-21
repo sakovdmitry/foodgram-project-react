@@ -1,11 +1,11 @@
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from recipes.pagination import RecipePagination
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from recipes.pagination import RecipePagination
 from .models import CustomUser, Follow
 from .serializers import CustomUserSerializer, FollowSerializer
 
@@ -30,19 +30,18 @@ class CustomUserViewSet(UserViewSet):
                 data=data,
                 context={'request': request}
                 )
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(
-                    serializer.data,
-                    status=status.HTTP_201_CREATED
-                    )
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+                )
         user = request.user
-        author = get_object_or_404(CustomUser, id=id) 
-        return self.__unsubscribe(user, author)
+        author = get_object_or_404(CustomUser, id=id)
+        return self.unsubscribe(user, author)
 
     @staticmethod
-    def __unsubscribe(user, author):
+    def unsubscribe(user, author):
         if user == author:
             return Response(
                 {'errors': 'Вы не можете отписываться от самого себя'},
