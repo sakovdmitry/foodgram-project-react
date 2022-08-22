@@ -22,20 +22,20 @@ class CustomUserViewSet(UserViewSet):
         detail=True,
         permission_classes=[IsAuthenticated],
         methods=['post', 'delete']
-        )
+    )
     def subscribe(self, request, id=None):
         if request.method == 'POST':
             data = {'user': request.user.id, 'author': id}
             serializer = FollowSerializer(
                 data=data,
                 context={'request': request}
-                )
+            )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
-                )
+            )
         user = request.user
         author = get_object_or_404(CustomUser, id=id)
         return self.unsubscribe(user, author)
@@ -46,15 +46,15 @@ class CustomUserViewSet(UserViewSet):
             return Response(
                 {'errors': 'Вы не можете отписываться от самого себя'},
                 status=status.HTTP_400_BAD_REQUEST
-                )
+            )
         follow = Follow.objects.filter(user=user, author=author)
         if follow.exists():
             follow.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
-                {'errors': 'Вы не подписаны на данного автора'},
-                status=status.HTTP_400_BAD_REQUEST
-                )
+            {'errors': 'Вы не подписаны на данного автора'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):

@@ -46,7 +46,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return FavoriteRecipe.objects.filter(
             user=request.user,
             recipe=obj
-            ).exists()
+        ).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
@@ -55,7 +55,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return Cart.objects.filter(
             user=request.user,
             recipe=obj
-            ).exists()
+        ).exists()
 
 
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
@@ -75,7 +75,7 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
         ).exists():
             raise serializers.ValidationError(
                 {'errors': 'Рецепт уже в избранном'}
-                )
+            )
         return data
 
 

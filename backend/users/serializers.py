@@ -55,19 +55,19 @@ class FollowRecipeSerializer(serializers.ModelSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(
         source='author.id'
-        )
+    )
     email = serializers.ReadOnlyField(
         source='author.email'
-        )
+    )
     username = serializers.ReadOnlyField(
         source='author.username'
-        )
+    )
     first_name = serializers.ReadOnlyField(
         source='author.first_name'
-        )
+    )
     last_name = serializers.ReadOnlyField(
         source='author.last_name'
-        )
+    )
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
@@ -85,7 +85,7 @@ class FollowSerializer(serializers.ModelSerializer):
             'recipes',
             'is_subscribed',
             'recipes_count'
-            )
+        )
 
     def validate(self, data):
         user = data['user']
@@ -93,11 +93,11 @@ class FollowSerializer(serializers.ModelSerializer):
         if user == author:
             raise serializers.ValidationError(
                 'Невозможно подписаться на самого себя'
-                )
+            )
         elif Follow.objects.filter(user=user, author=author).exists():
             raise serializers.ValidationError(
                 'Вы уже подписаны на данного автора'
-                )
+            )
         return data
 
     def get_is_subscribed(self, obj):

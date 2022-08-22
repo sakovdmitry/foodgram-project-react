@@ -50,7 +50,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(
             {'errors': 'Рецепт не в списке'},
             status=status.HTTP_400_BAD_REQUEST
-            )
+        )
 
     def __method_handler(self, request, pk, serializer, model):
         if request.method == 'POST':
@@ -58,31 +58,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 request,
                 pk,
                 serializer
-                )
+            )
         return self.__delete_obj(
             model,
             request.user,
             pk,
-            )
+        )
 
     @action(
         detail=True,
         methods=['post', 'delete'],
         permission_classes=[IsAuthenticated]
-        )
+    )
     def favorite(self, request, pk=None):
         return self.__method_handler(
             request,
             pk,
             FavoriteRecipeSerializer,
             FavoriteRecipe
-            )
+        )
 
     @action(
         detail=True,
         methods=['post', 'delete'],
         permission_classes=[IsAuthenticated]
-        )
+    )
     def shopping_cart(self, request, pk=None):
         return self.__method_handler(request, pk, CartSerializer, Cart)
 

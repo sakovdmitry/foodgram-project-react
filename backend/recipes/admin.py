@@ -21,7 +21,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     count_favorites.short_description = (
         'Количество добавлений рецепта в избранное'
-        )
+    )
 
 
 @admin.register(Ingredient)

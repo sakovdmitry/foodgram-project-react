@@ -8,4 +8,4 @@ api_paths = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(api_paths)),
-    ]
+]
