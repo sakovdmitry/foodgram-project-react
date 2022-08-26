@@ -1,40 +1,47 @@
 version: '3.3'
 services:
   db:
-    image: postgres:13.0-alpine
+    image: postgres:14.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
+
   backend:
     image: sakovdmitry/backend:latest
     restart: always
-    volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
+    volumes:      
+      - static_value:/app/foodgram/static/
+      - media_value:/app/foodgram/media/
+      - redoc:/app/foodgram/docs/ 
     depends_on:
       - db
     env_file:
       - ./.env
+
   frontend:
     image: sakovdmitry/frontend:latest
     volumes:
-      - ../frontend/:/app/result_build/
-  nginx:
+      - result_build:/app/result_build/build/
+
+nginx:
     image: nginx:1.19.3
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
-      - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
+      - result_build:/usr/share/nginx/html/
+      - redoc:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/static/
       - media_value:/var/html/media/
     depends_on:
-      - backend
+      - frontend
+    env_file:
+      - ./.env
 
-volumes:
-  postgres_data:
+volumes:   
   static_value:
   media_value:
+  postgres_data:
+  result_build:
+  redoc:
