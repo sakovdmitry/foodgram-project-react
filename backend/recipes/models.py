@@ -5,12 +5,12 @@ from users.models import CustomUser
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=20,
+        max_length=100,
         blank=False,
         verbose_name='Название ингредиента'
     )
     measurement_unit = models.CharField(
-        max_length=20,
+        max_length=40,
         blank=False,
         verbose_name='Единица измерения'
     )
