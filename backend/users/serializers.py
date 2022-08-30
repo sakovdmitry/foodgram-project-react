@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from djoser.serializers import UserCreateSerializer, UserSerializer
 
 from recipes.models import Recipe
@@ -27,6 +28,11 @@ class CustomUserSerializer(UserSerializer):
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=CustomUser.objects.all())])
+    username = serializers.CharField(
+        validators=[UniqueValidator(queryset=CustomUser.objects.all())])
+
     class Meta:
         model = CustomUser
         fields = (

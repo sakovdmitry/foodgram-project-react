@@ -15,9 +15,6 @@ class CustomUserViewSet(UserViewSet):
     queryset = CustomUser.objects.all()
     pagination_class = RecipePagination
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
     @action(
         detail=True,
         permission_classes=[IsAuthenticated],
