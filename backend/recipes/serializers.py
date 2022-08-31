@@ -127,7 +127,7 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FavoriteRecipe
-        fields = ('user', 'recipe', 'image', 'cooking_time')
+        fields = ('id', 'user', 'recipe', 'image', 'cooking_time')
 
     def validate(self, data):
         request = self.context.get('request')
@@ -148,7 +148,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ('user', 'recipe', 'image', 'cooking_time')
+        fields = ('id', 'user', 'recipe', 'image', 'cooking_time')
 
     def validate(self, data):
         request = self.context.get('request')
