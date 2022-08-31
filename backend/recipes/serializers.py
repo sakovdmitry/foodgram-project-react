@@ -30,6 +30,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
+    amount = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = RecipeIngredient
@@ -64,7 +65,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'text',
             'ingredients',
             'tags',
-            'cooking_time'
+            'cooking_time',
             'is_favorited',
             'is_in_shopping_cart',
         )
