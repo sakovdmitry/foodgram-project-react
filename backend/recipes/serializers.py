@@ -2,19 +2,38 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
-from .models import Cart, FavoriteRecipe, Ingredient, Recipe, Tag
+from .models import (
+    Cart,
+    FavoriteRecipe,
+    Ingredient,
+    Recipe,
+    Tag,
+    RecipeIngredient
+)
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ('name', 'measurement_unit')
+        fields = ('id', 'name', 'measurement_unit')
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('name', 'color', 'slug')
+        fields = ('id', 'name', 'color', 'slug')
+
+
+class RecipeIngredientSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
+    )
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -23,7 +42,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
-    ingredients = IngredientSerializer(
+    ingredients = RecipeIngredientSerializer(
         many=True
     )
     image = Base64ImageField(
@@ -32,12 +51,23 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     text = serializers.CharField()
     cooking_time = serializers.IntegerField()
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
-        fields = '__all__'
+        fields = (
+            'id',
+            'author',
+            'name',
+            'image',
+            'text',
+            'ingredients',
+            'tags',
+            'cooking_time'
+            'is_favorited',
+            'is_in_shopping_cart',
+        )
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
