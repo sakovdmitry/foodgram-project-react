@@ -121,13 +121,17 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
 
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
-    image = serializers.ReadOnlyField(source='recipe_image')
-    cooking_time = serializers.ReadOnlyField(source='recipe.cooking_time')
 
     class Meta:
         model = FavoriteRecipe
-        fields = ('id', 'user', 'recipe', 'image', 'cooking_time')
+        fields = ('id', 'user', 'recipe')
 
     def validate(self, data):
         request = self.context.get('request')
@@ -140,6 +144,11 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
                 {'errors': 'Рецепт уже в избранном'}
             )
         return data
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return ShortRecipeSerializer(instance.recipe, context=context).data
 
 
 class CartSerializer(serializers.ModelSerializer):
