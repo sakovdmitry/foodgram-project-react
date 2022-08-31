@@ -92,6 +92,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         shop_list = generate_shop_list(request.user)
         return HttpResponse(shop_list, content_type='text/plain')
 
+    @action(detail=False, permission_classes=[IsAuthenticated])
+    def favorites(self, request):
+        user = request.user
+        queryset = FavoriteRecipe.objects.filter(user=user)
+        pages = self.paginate_queryset(queryset)
+        serializer = FavoriteRecipeSerializer(
+            pages,
+            many=True,
+            context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
+
 
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
