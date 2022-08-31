@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from .filters import IngredientSearchFilter
 from .models import (
     Cart,
     FavoriteRecipe,
@@ -97,6 +98,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = [IsAdminOrReadOnly]
     pagination_class = None
+    filter_backends = [IngredientSearchFilter, ]
+    search_fields = ('name',)
 
 
 class TagViewSet(viewsets.ModelViewSet):
