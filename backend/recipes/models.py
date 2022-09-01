@@ -33,11 +33,21 @@ class Tag(models.Model):
     GREEN = '#33B918'
     YELLOW = '#f6fa05'
     BLUE = '#052efa'
+    MALACHITE = '#0BDA51'
+    SAND = '#FCDD76'
+    COBALT = '#0047AB'
+    PINK = '#DDA0DD'
+
     COLORS_CHOICE = [
         (GREEN, 'Зеленый'),
         (YELLOW, 'Желтый'),
-        (BLUE, 'Синий')
+        (BLUE, 'Синий'),
+        (MALACHITE, 'Малахит'),
+        (SAND, 'Песок'),
+        (COBALT, 'Кобальт'),
+        (PINK, 'Орхидея')
     ]
+
     name = models.CharField(
         max_length=20,
         blank=False,
