@@ -1,6 +1,6 @@
 ![workflow](https://github.com/sakovdmitry/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 адрес для доступа:
-http://51.250.96.231/
+http://51.250.23.39/
 
 # Описание проекта
 Сайт Foodgram, «Продуктовый помощник».
@@ -54,7 +54,7 @@ sudo docker-compose exec web python manage.py collectstatic --no-input
 
 Пример GET запроса:
 ```
-GET http://51.250.96.231/api/users/
+GET http://51.250.23.39/api/users/
 ```
 Ответ:
 ```
@@ -76,7 +76,7 @@ GET http://51.250.96.231/api/users/
 ```
 Пример POST запроса:
 ```
-POST http://51.250.96.231/api/recipes/
+POST http://51.250.23.39/api/recipes/
 ```
 Содержимое запроса:
 ```
