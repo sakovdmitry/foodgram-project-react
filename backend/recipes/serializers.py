@@ -1,6 +1,5 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from itertools import islice
 
 from users.serializers import CustomUserSerializer
 from .models import (
@@ -119,16 +118,16 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     @staticmethod
-    def create_ingredients(self, ingredients, recipe):
-        batch_size = 100
-        objs = (RecipeIngredient(recipe=recipe, ingredient_id=ingredient.get(
-                'id'), amount=ingredient.get('amount')) for ingredient in
-                ingredients)
-        while True:
-            batch = list(islice(objs, batch_size))
-            if not batch:
-                break
-            RecipeIngredient.objects.bulk_create(ingredients, batch_size)
+    def create_ingredients(ingredients, recipe):
+        new_ingredients = []
+        for ingredient in ingredients:
+            adding_ingredient = RecipeIngredient(
+                recipe=recipe,
+                ingredient=ingredient['id'],
+                amount=ingredient['amount']
+            )
+            new_ingredients.append(adding_ingredient)
+        RecipeIngredient.objects.bulk_create(new_ingredients)
 
     @staticmethod
     def create_tags(tags, recipe):

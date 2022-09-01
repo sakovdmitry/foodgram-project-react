@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import IngredientSearchFilter
+from .filters import IngredientSearchFilter, RecipeFilter
 from .models import (
     Cart,
     FavoriteRecipe,
@@ -29,6 +29,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     pagination_class = RecipePagination
     permission_classes = [IsAuthorOrReadOnly]
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
