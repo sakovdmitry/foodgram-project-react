@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 from users.models import CustomUser
 
@@ -16,6 +17,11 @@ class Ingredient(models.Model):
     )
 
     class Meta:
+        constraints = (
+            models.UniqueConstraint(
+                fields=('name', 'measurement_unit'),
+                name='name_unit_uniq'),
+        )
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
@@ -86,7 +92,8 @@ class Recipe(models.Model):
         verbose_name='Теги'
     )
     cooking_time = models.PositiveSmallIntegerField(
-        verbose_name='Время приготовления'
+        verbose_name='Время приготовления',
+        validators=(MinValueValidator(1),),
     )
 
     class Meta:
@@ -109,11 +116,20 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Рецепт'
     )
-    amount = models.PositiveSmallIntegerField(
-        verbose_name='Количество'
+    amount = models.FloatField(
+        validators=(MinValueValidator(
+            0.1,
+            message='Укажите количество больше нуля!',
+        ),),
+        verbose_name='Количество',
     )
 
     class Meta:
+        constraints = (
+            models.UniqueConstraint(
+                fields=('recipe', 'ingredient',),
+                name='recipe_ingredient_exists'),
+        )
         ordering = ['-id']
         verbose_name = 'Количество ингредиентов'
 

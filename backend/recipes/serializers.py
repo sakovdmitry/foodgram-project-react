@@ -19,6 +19,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all())
+
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
@@ -30,11 +32,19 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
-    amount = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = RecipeIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
+
+
+class AddIngredientSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    amount = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ('id', 'amount')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -43,7 +53,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
-    ingredients = RecipeIngredientSerializer(
+    ingredients = AddIngredientSerializer(
         many=True
     )
     image = Base64ImageField(
@@ -156,7 +166,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ('id', 'user', 'recipe', 'image', 'cooking_time')
+        fields = ('id', 'user', 'recipe')
 
     def validate(self, data):
         request = self.context.get('request')
@@ -166,3 +176,9 @@ class CartSerializer(serializers.ModelSerializer):
                 {'errors': 'Рецепт уже в корзине'}
             )
         return data
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return ShortRecipeSerializer(
+            instance.recipe, context=context).data
