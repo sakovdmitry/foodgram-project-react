@@ -181,9 +181,6 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    image = serializers.ReadOnlyField(source='recipe__image')
-    cooking_time = serializers.ReadOnlyField(source='recipe.cooking_time')
-
     class Meta:
         model = Cart
         fields = ('id', 'user', 'recipe')
