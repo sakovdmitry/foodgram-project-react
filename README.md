@@ -1,6 +1,7 @@
 ![workflow](https://github.com/sakovdmitry/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 адрес для доступа:
 http://51.250.23.39/
+
 почта: nlevashov@yandex.ru
 пароль: 1234
 
