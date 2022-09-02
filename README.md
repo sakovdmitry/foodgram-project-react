@@ -1,6 +1,8 @@
 ![workflow](https://github.com/sakovdmitry/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 адрес для доступа:
 http://51.250.23.39/
+почта: nlevashov@yandex.ru
+пароль: 1234
 
 # Описание проекта
 Сайт Foodgram, «Продуктовый помощник».
@@ -33,6 +35,10 @@ git clone git@github.com:sakovdmitry/foodgram-project-react.git
 - Выполнить миграции
 ```
 sudo docker-compose exec web python manage.py migrate
+```
+- Заполнить базу данными
+```
+sudo docker-compose exec backend python manage.py loaddata inhredients.json
 ```
 - Создать суперпользователя
 ```
